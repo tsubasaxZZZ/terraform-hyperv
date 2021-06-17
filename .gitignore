@@ -1,0 +1,8 @@
+*.cer
+*.pfx
+*.pem
+*.txt
+*tfstate*
+*tfplan*
+.terraform
+terraform.tfvars
