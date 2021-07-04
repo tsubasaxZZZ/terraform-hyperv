@@ -12,8 +12,14 @@ provider "hyperv" {
   user            = var.user
   password        = var.password
   host            = var.host
-  port            = 5986
-  https           = true
+
+  # for HTTPS
+  #port            = 5986
+  #https           = true
+  # for HTTP
+  port            = 5985
+  https           = false
+
   insecure        = false
   use_ntlm        = true
   script_path     = "C:/Temp/terraform_%RAND%.cmd"
@@ -35,17 +41,18 @@ data "hyperv_network_switch" "internal" {
   name = "internal" 
 }
 
-resource "hyperv_vhd" "web_server_g1_vhd" {
-  path = "j:\\hyper-h\\web_server_g1.vhdx" #Needs to be absolute path
-  size = 10737418240 #10GB
+resource "hyperv_vhd" "server1" {
+  path = "F:\\hyper-v\\hoge.vhdx"
+  parent_path = "F:\\hyper-v\\master\\win2016.vhdx"
+  vhd_type = "Differencing"
 }
 
-resource "hyperv_machine_instance" "web_server_g1" {
-  name = "web_server_g1"
-  generation = 1
+resource "hyperv_machine_instance" "server1" {
+  name = "server1"
+  generation = 2
   processor_count = 4
   static_memory = true
-  memory_startup_bytes = 629145600
+  memory_startup_bytes = 1024 * 1024 * 1024 * 4 # 4GB
   wait_for_state_timeout = 10
   wait_for_ips_timeout = 10
 
@@ -55,14 +62,13 @@ resource "hyperv_machine_instance" "web_server_g1" {
   }
 
   network_adaptors {
-      name = "wan"
+      name = "internal"
       switch_name = data.hyperv_network_switch.internal.name
       wait_for_ips = false
   }
 
   hard_disk_drives {
-    controller_type = "Ide"
-    path = hyperv_vhd.web_server_g1_vhd.path
+    path = hyperv_vhd.server1.path
     controller_number = 0
     controller_location = 0
   }
