@@ -7,13 +7,6 @@ winrm quickconfig
 winrm set winrm/config/client '@{TrustedHosts="Computer1,Computer2"}'
 ```
 
-#### サーバー側
-
-```PowerShell
-Enable-PSRemoting -Force
-winrm quickconfig
-winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="_";CertificateThumbprint="_"}
-```
 
 ファイアウォールの設定もセットで
 
@@ -22,7 +15,15 @@ winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="_";Cert
 
 参考情報参照。
 
-#### 接続確認(SSL)
+### 接続確認(SSL)
+
+#### サーバー側
+
+```PowerShell
+Enable-PSRemoting -Force
+winrm quickconfig
+winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="_";CertificateThumbprint="_"}
+```
 
 ```PowerShell
 $hostName="winsrv01.nomupro.com"
