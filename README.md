@@ -3,7 +3,7 @@
 以下 README の通りにセットアップする
 - https://github.com/taliesins/terraform-provider-hyperv#setting-up-server-for-provider-usage
 
-- サーバー側
+### サーバー側
 
 ```powershell
 Enable-PSRemoting -SkipNetworkProfileCheck -Force
@@ -39,13 +39,17 @@ Restart-Service WinRM -Verbose
 New-NetFirewallRule -DisplayName "Windows Remote Management (HTTP-In)" -Name "WinRMHTTPIn" -Profile Any -LocalPort 5985 -Protocol TCP -Verbose
 ```
 
+### クライアント側
+
+特に何もしなくてもいけるはず。
+
 ## トラシュー用
 
 ### デバッグ
 
 `terraform plan` や `terraform apply` を実行すると、ホストに PowerShell スクリプトが転送される。従ってそのスクリプトを見ると何が実行されるかが分かるのでデバッグできる。
 
-スクリプトは、ユーザー名で指定した `%localappdata%\temp` にコピーされる。terraform の実行が終了するとすぐに削除されてしまうので、直ぐにコピーする。
+スクリプトは、ユーザー名で指定したユーザーの `%localappdata%\temp` にコピーされる。terraform の実行が終了するとすぐに削除されてしまうので、直ぐにコピーする。
 
 ### クライアント側
 
@@ -67,6 +71,8 @@ Enable-PSRemoting -Force
 winrm quickconfig
 winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="_";CertificateThumbprint="_"}
 ```
+
+`CertificateThumbprint` は、`certmgr` や `certutil` を使って取得する。
 
 ```PowerShell
 $hostName="winsrv01.nomupro.com"
@@ -91,7 +97,7 @@ Enter-PSSession -ComputerName $hostName -Port $winrmPort -Credential $cred -Sess
 
 - state ファイルを削除すると直ったことがあった。
 
-### 参考情報
+## 参考情報
 - https://qiita.com/kazinoue/items/bdd7b783d6742770b2cc
 - https://www.vwnet.jp/Windows/PowerShell/EnableWinRMFromLinux.htm
 - https://www.vwnet.jp/Windows/WS16/2017062701/EnterPSSession4WGWS16.htm
